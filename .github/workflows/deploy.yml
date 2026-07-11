@@ -23,13 +23,10 @@ jobs:
         with:
           channel: stable
       - run: flutter pub get
-      # TODO: replace PROXY_BASE once the Cloudflare Worker is deployed —
-      # see cloudflare-worker/README.md. Until then the live site can load
-      # but Browse/Studios/Monitor won't be able to fetch data.
       - run: |
           flutter build web --release \
             --base-href /My-Steam-Buddy/ \
-            --dart-define=PROXY_BASE=https://mysteambuddy-proxy.example.workers.dev
+            --dart-define=PROXY_BASE=https://mysteambuddy-proxy.sumankayal247.workers.dev
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
