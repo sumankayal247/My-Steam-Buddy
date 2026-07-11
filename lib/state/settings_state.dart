@@ -6,6 +6,12 @@ class SettingsState extends ChangeNotifier {
   static const _kKey = 'itad_api_key';
   static const _kCountry = 'country';
 
+  // Not hardcoded — this repo is public (GitHub Pages web build), so the key
+  // can't live in source. Personal APK builds can still pre-seed it via
+  // --dart-define=ITAD_DEFAULT_KEY=..., which never touches git; the public
+  // web build (no dart-define passed) stays keyless and prompts on first run.
+  static const _defaultApiKey = String.fromEnvironment('ITAD_DEFAULT_KEY');
+
   String _apiKey = '';
   String _country = 'IN';
   bool _loaded = false;
@@ -17,7 +23,7 @@ class SettingsState extends ChangeNotifier {
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _apiKey = prefs.getString(_kKey) ?? '';
+    _apiKey = prefs.getString(_kKey) ?? _defaultApiKey;
     _country = prefs.getString(_kCountry) ?? 'IN';
     _loaded = true;
     notifyListeners();
