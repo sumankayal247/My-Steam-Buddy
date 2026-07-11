@@ -102,6 +102,16 @@ class ItadApi {
       String.fromEnvironment('PROXY_BASE', defaultValue: 'http://127.0.0.1:8787');
   static String get _base => kIsWeb ? '$_proxyBase/itad' : 'https://api.isthereanydeal.com';
 
+  static const _assetsHost = 'https://assets.isthereanydeal.com/';
+
+  /// ITAD's image CDN sends no CORS headers either (unlike Steam's, which
+  /// does), so cover art fetched by Flutter web's renderer needs the same
+  /// proxy treatment as the API calls. No-op outside web or for non-ITAD URLs.
+  static String? _proxiedImage(String? url) {
+    if (url == null || !kIsWeb || !url.startsWith(_assetsHost)) return url;
+    return '$_proxyBase/img/${url.substring(_assetsHost.length)}';
+  }
+
   Uri _u(String path, [Map<String, String>? q]) => Uri.parse('$_base$path').replace(
         queryParameters: {'key': apiKey, ...?q},
       );
@@ -243,7 +253,7 @@ class ItadApi {
         : const [];
     return ItadInfo(
       title: title,
-      boxart: boxart,
+      boxart: _proxiedImage(boxart),
       developers: names(data['developers']),
       publishers: names(data['publishers']),
     );
@@ -270,11 +280,11 @@ class ItadApi {
       return ItadDeal(
         id: g['id'] as String? ?? '',
         title: g['title'] as String? ?? 'Unknown',
-        boxart: assets is Map ? assets['boxart'] as String? : null,
-        banner: assets is Map
+        boxart: _proxiedImage(assets is Map ? assets['boxart'] as String? : null),
+        banner: _proxiedImage(assets is Map
             ? (assets['banner300'] ?? assets['banner400'] ?? assets['banner600'] ?? assets['banner145'])
                 as String?
-            : null,
+            : null),
         price: deal is Map ? _amount(deal['price']) : null,
         regular: deal is Map ? _amount(deal['regular']) : null,
         cut: deal is Map ? (deal['cut'] as num?)?.toInt() ?? 0 : 0,
@@ -297,7 +307,7 @@ class ItadApi {
       return ItadDeal(
         id: g['id'] as String? ?? '',
         title: g['title'] as String? ?? 'Unknown',
-        boxart: assets is Map ? assets['boxart'] as String? : null,
+        boxart: _proxiedImage(assets is Map ? assets['boxart'] as String? : null),
       );
     }).where((d) => d.id.isNotEmpty).toList();
   }

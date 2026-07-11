@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Local CORS proxy for MySteamBuddy's web build.
 
-Steam's and ITAD's public APIs don't send Access-Control-Allow-Origin, so a
-browser build can't call them directly. This forwards:
+Steam's and ITAD's public APIs (and ITAD's image CDN) don't send
+Access-Control-Allow-Origin, so a browser build can't call them directly.
+This forwards:
 
   http://127.0.0.1:8787/steam/<path>  -> https://api.steampowered.com/<path>
   http://127.0.0.1:8787/itad/<path>   -> https://api.isthereanydeal.com/<path>
+  http://127.0.0.1:8787/img/<path>    -> https://assets.isthereanydeal.com/<path>
 
 adding permissive CORS headers to the response. Zero third-party
 dependencies (stdlib only). Run this alongside `flutter run -d chrome` or a
@@ -24,6 +26,7 @@ PORT = 8787
 UPSTREAMS = {
     "/steam/": "https://api.steampowered.com/",
     "/itad/": "https://api.isthereanydeal.com/",
+    "/img/": "https://assets.isthereanydeal.com/",
 }
 
 

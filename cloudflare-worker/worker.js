@@ -9,10 +9,12 @@
 // Routes:
 //   /steam/<path>  -> https://api.steampowered.com/<path>
 //   /itad/<path>   -> https://api.isthereanydeal.com/<path>
+//   /img/<path>    -> https://assets.isthereanydeal.com/<path>  (cover art CDN, also no CORS)
 
 const UPSTREAMS = {
   '/steam/': 'https://api.steampowered.com/',
   '/itad/': 'https://api.isthereanydeal.com/',
+  '/img/': 'https://assets.isthereanydeal.com/',
 };
 
 const CORS_HEADERS = {
