@@ -86,8 +86,6 @@ class _SettingsPageState extends State<SettingsPage> {
         TextField(
           controller: _keyCtrl,
           obscureText: true,
-          enableInteractiveSelection: false,
-          contextMenuBuilder: (context, state) => const SizedBox.shrink(),
           decoration: InputDecoration(
             hintText: 'Paste your ITAD API key',
             filled: true,
