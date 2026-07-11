@@ -41,6 +41,10 @@ class ItadDeal {
   final String id;
   final String title;
   final String? boxart;
+
+  /// Banner art fallback — DLC/package-type entries often have no [boxart]
+  /// at all, only banners.
+  final String? banner;
   final double? price;
   final double? regular;
   final int cut;
@@ -52,6 +56,7 @@ class ItadDeal {
     required this.id,
     required this.title,
     this.boxart,
+    this.banner,
     this.price,
     this.regular,
     this.cut = 0,
@@ -60,6 +65,11 @@ class ItadDeal {
     this.flag,
     this.url,
   });
+
+  /// Best available cover image for a landscape tile: banner (matches the
+  /// tile's aspect ratio) first, portrait boxart as a fallback for the rare
+  /// entry with no banner at all.
+  String? get coverImage => banner ?? boxart;
 
   /// All-time low or a freshly-broken record — the two flags this app
   /// treats as "all-time low" in Browse.
@@ -261,6 +271,10 @@ class ItadApi {
         id: g['id'] as String? ?? '',
         title: g['title'] as String? ?? 'Unknown',
         boxart: assets is Map ? assets['boxart'] as String? : null,
+        banner: assets is Map
+            ? (assets['banner300'] ?? assets['banner400'] ?? assets['banner600'] ?? assets['banner145'])
+                as String?
+            : null,
         price: deal is Map ? _amount(deal['price']) : null,
         regular: deal is Map ? _amount(deal['regular']) : null,
         cut: deal is Map ? (deal['cut'] as num?)?.toInt() ?? 0 : 0,

@@ -238,11 +238,13 @@ class GameRepository {
     );
   }
 
+  // Note: `deal.url` from /deals/v2 is an itad.link redirect, not a Steam
+  // store URL, so there's no appid to extract here — boxart/banner from
+  // ITAD's own assets is the only cover art source for this feed.
   Game _gameFromDeal(ItadDeal d) => Game(
         itadId: d.id,
-        steamAppId: _steamAppIdFromUrl(d.url),
         title: d.title,
-        boxart: d.boxart,
+        boxart: d.coverImage,
         price: d.price,
         regular: d.regular,
         cut: d.cut,
@@ -251,12 +253,6 @@ class GameRepository {
         lowestPrice: d.historyLow ?? d.storeLow,
         isNewLow: d.isNewRecord,
       );
-
-  static int? _steamAppIdFromUrl(String? url) {
-    if (url == null) return null;
-    final m = RegExp(r'/app/(\d+)').firstMatch(url);
-    return m != null ? int.tryParse(m.group(1)!) : null;
-  }
 
   /// Global title search (beyond the loaded catalog) enriched with prices.
   Future<List<Game>> searchGames(String query) async {
